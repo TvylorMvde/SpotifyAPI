@@ -7,7 +7,16 @@ git clone https://github.com/TvylorMvde/SpotifyAPI.git
 ```
 pip install requests
 ```
-### 3. Edit **config.py**
+### 3. Generate OAuth Token
+- Go to [Spotify for Developers](https://developer.spotify.com/console/get-artist-top-tracks/)
+- Fill in the mandatory fields (*artist* *id* and *market*)
+- Click the **Get Token** button and check the boxes: 
+    - *user-read-private*
+    - *playlist-read-private*
+    - *playlist-modify-private*
+- Click the **Request Token** button.
+
+### 4. Edit **config.py**
 ```
 TOKEN = "Your Token"
 USER_ID = "Your Spotify ID"
@@ -19,6 +28,6 @@ PLAYLIST_INFO = {
     "public": False
 }
 ```
-### 4. Run the script
+### 5. Run the script
 ```
 python spotify.py
