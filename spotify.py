@@ -1,4 +1,3 @@
-
 import requests
 import json
 import time
@@ -26,35 +25,26 @@ headers = {
     "Authorization": f"Bearer {TOKEN}"}
 
 
-def get_playlist(url, headers):
+def get_data(url, headers):
+    response = requests.get(url, headers=headers)
     try:
-        response = requests.get(url, headers=headers)
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        print(e)
-    return response.json()
-
-
-def get_artist(url, headers):
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        print(e)
+        print(e.response.text)
     return response.json()
 
 
 def get_artist_name(url, headers):
-    data = get_artist(url, headers)
+    data = get_data(url, headers)
     return data['name']
 
 
 def get_top_tracks(url, headers):
+    response = requests.get(url, headers=headers)
     try:
-        response = requests.get(url, headers=headers)
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        print(e)
+        print(e.response.text)
     return response.json()['tracks']
 
 
@@ -68,36 +58,31 @@ def get_top_tracks_uris(url, headers):
 
 def create_playlist(url, headers, playlist_info):
     playlist_data = json.dumps(playlist_info)
+    response = requests.post(url, data=playlist_data, headers=headers)
     try:
-        response = requests.post(url, data=playlist_data, headers=headers)
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        print(e)
+        print(e.response.text)
     return response.json()['id']
 
 
 def add_tracks_to_playlist(playlist_id, toptracks_url, headers):
     url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-    tracks = json.dumps({
-        "uris": get_top_tracks_uris(toptracks_url, headers)
-    })
+    tracks = json.dumps({"uris": get_top_tracks_uris(toptracks_url, headers)})
+    response = requests.post(url, data=tracks, headers=headers)
     try:
-        response = requests.post(url, data=tracks, headers=headers)
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        print(e)
+        print(e.response.text)
     return None
 
 
 if __name__ == "__main__":
     artist_name = get_artist_name(artist_url, headers)
     print(f"Creating playlist with {artist_name}'s top tracks...")
-    time.sleep(1)
     playlist_id = create_playlist(playlist_url, headers, PLAYLIST_INFO)
     print("Playlist created successfully.")
-    time.sleep(1)
     print(f"Adding songs to playlist...")
-    time.sleep(2)
     add_tracks_to_playlist(playlist_id, toptracks_url, headers)
     print("Done.")
 
